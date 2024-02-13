@@ -2,35 +2,28 @@ import pygame
 import random
 
 def main():
-    
+ 
     WIDTH = 800
     HEIGHT = 800 
 
     blockWidth = 40
     blockHeight = 40
 
-    snake = pygame.rect.Rect([0, 0, blockWidth, blockHeight])
-    snakeBody = [snake.copy()]
-
     RANGE = (blockWidth, WIDTH - blockWidth // 2, blockWidth)
-
+   
+    length = 1
     pygame.init()
     pygame.display.set_caption("Sanek")
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     running = True
-
-    snakeX = random.randrange(*RANGE)
-    snakeY = random.randrange(*RANGE)
     
+    snake_dir = (0, 0)
     foodX = random.randrange(*RANGE)
     foodY = random.randrange(*RANGE)
-    
-    directionUp = False
-    directionDown = False
-    directionRight = True
-    directionLeft = False
 
+    snake = pygame.rect.Rect([0, 0, blockWidth, blockHeight])
+    snakeBody = [snake.copy()]
 
     time = 0;
 
@@ -55,48 +48,36 @@ def main():
                 pygame.draw.rect(screen, "black", rect, 1)
     
         if keys[pygame.K_UP]:
-            directionUp = True
-            directionDown = False
-            directionRight = False 
-            directionLeft = False
+            snake_dir = (0, -blockHeight)
 
         if keys[pygame.K_DOWN]:
-            directionUp = False
-            directionDown = True 
-            directionRight = False 
-            directionLeft = False
+            snake_dir = (0, blockHeight)
 
         if keys[pygame.K_RIGHT]:
-            directionUp = False 
-            directionDown = False
-            directionRight = True 
-            directionLeft = False
+            snake_dir = (blockWidth, 0)
 
         if keys[pygame.K_LEFT]:
-            directionUp = False
-            directionDown = False
-            directionRight = False 
-            directionLeft = True
+            snake_dir = (-blockWidth, 0)
 
         if time > 100:
-            if directionRight:
-                snakeX = snakeX + blockWidth
-            if directionLeft:
-                snakeX = snakeX - blockWidth
-            if directionUp:
-                snakeY = snakeY - blockHeight
-            if directionDown:
-                snakeY = snakeY + blockHeight
+           snake.move_ip(snake_dir)
+           snakeBody.append(snake.copy())
+           snakeBody = snakeBody[-length:]
 
-            time = 0
+           time = 0
 
-        if foodX == snakeX and foodY == snakeY:
+        if foodX == snake.x and foodY == snake.y:
+            length += 1
+            print(length)
             foodX = random.randrange(*RANGE)
             foodY = random.randrange(*RANGE)
 
-        rectSnake = pygame.Rect(snakeX, snakeY, blockWidth, blockHeight)
+        
+        for segment in snakeBody:
+            pygame.draw.rect(screen, "green", segment)
+        
+        #draw
         rectFood = pygame.Rect(foodX, foodY, blockWidth, blockHeight)
-        pygame.draw.rect(screen, "green", rectSnake)
         pygame.draw.rect(screen, "red", rectFood)
         pygame.display.flip()
 
