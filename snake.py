@@ -4,6 +4,7 @@ import random
 length = 1
 score = length
 
+#TODO: rainbow snek when score > big number (like 100)
 #TODO   
 def check():
     #right
@@ -33,7 +34,7 @@ RANGE = (blockWidth, WIDTH - blockWidth // 2, blockWidth)
 pygame.init()
 pygame.font.init()
 
-Font=pygame.font.SysFont('timesnewroman',  30)
+Font=pygame.font.SysFont('timesnewroman',  45)
 pygame.display.set_caption("Sanek")
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -46,7 +47,10 @@ snake.y = random.randrange(*RANGE)
 
 snakeBody = []
 food = pygame.rect.Rect([0, 0, blockWidth, blockHeight])
-
+food.x = random.randrange(*RANGE)
+food.y = random.randrange(*RANGE)
+x = 0.0
+y = 0.0
 
 time = 0;
 
@@ -65,10 +69,10 @@ while running:
     if keys[pygame.K_q]:
         running = False
 
-    for x in range(int(WIDTH / blockWidth)):
-        for y in range(int(HEIGHT / blockHeight)):
-            rect = pygame.Rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight)
-            pygame.draw.rect(screen, "black", rect, 1)
+ #   for x in range(int(WIDTH / blockWidth)):
+ #       for y in range(int(HEIGHT / blockHeight)):
+ #           rect = pygame.Rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight)
+ #           pygame.draw.rect(screen, "black", rect, 1)
     
     #TODO: check conditions
     if keys[pygame.K_UP] and snake_dir != (0, blockHeight):
@@ -101,19 +105,20 @@ while running:
        snakeBody = snakeBody[-length:]
 
        time = 0
-     
-    text = Font.render('Score: ' + str(score), True, (0, 255, 0))
-    screen.blit(text, (0, 0))
 
+    #when snek eat food
     if food.x == snake.x and food.y == snake.y:
         length += 1
         score += 1
 
         food.x = random.randrange(*RANGE)
         food.y = random.randrange(*RANGE)
+
+        #nuh uh
+        x = random.uniform(0, WIDTH - 50)
+        y = random.uniform(0, HEIGHT - 20)
         
     #TODO: check directions (snake can go into himself when score = 2)
-
     snake_eating_itself = pygame.Rect.collidelist(snake, snakeBody[:-1]) !=-1
     if snake_eating_itself:
         length = 1
@@ -135,8 +140,12 @@ while running:
         pygame.draw.rect(screen, "green", segment)
     
     pygame.draw.rect(screen, "red", food)
-    pygame.display.flip()
 
+    text = Font.render('Score: ' + str(score), True, (0, 0, 255))
+    screen.blit(text, (x, y))
+
+    pygame.display.flip()
+     
     clock.tick(60)
 
 pygame.quit()
